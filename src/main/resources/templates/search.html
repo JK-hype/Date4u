@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.1.0/dist/quartz/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <div data-th-insert="~{fragments/header :: head}"></div>
+    <div class="row">
+        <form data-th-action="@{/profiles/search}" data-th-object="${searchData}" method="get">
+            <div class="col">
+                <label for="fromAge" class="form-label">Min Age</label>
+                <input type="number" id="fromAge" data-th-field="*{minAge}" min="1" class="form-control">
+            </div>
+            <div class="col">
+                <label for="toAge" class="form-label">Max Age</label>
+                <input type="number" id="toAge" data-th-field="*{maxAge}" min="1" class="form-control">
+            </div>
+            <div class="col">
+                <label for="fromHornlength" class="form-label">Min Hornlength</label>
+                <input type="number" id="fromHornlength" data-th-field="*{minHornlength}" min="1" class="form-control">
+            </div>
+            <div class="col">
+                <label for="toHornlength" class="form-label">Max Hornlength</label>
+                <input type="number" id="toHornlength" data-th-field="*{maxHornlength}" min="1" class="form-control">
+            </div>
+            <div class="col">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+    </div>
+    <div class="row">
+        <ul class="list-group">
+            <li data-th-each="profile : ${profiles}">
+                <a data-th-href="@{'/profiles?nickname=' + ${profile.nickname}}">
+                    <p data-th-text="'Nickname: ' + ${profile.nickname}"></p>
+                    <p data-th-text="'Birthdate: ' + ${#temporals.format(profile.birthdate, 'dd.MM.yyyy')}"></p>
+                    <p data-th-text="'Hornlength: ' + ${profile.hornlength}"></p>
+                    <div style="max-height:45px; max-width:45px; overflow: hidden;">
+                        <img th:src="@{/photos/{id}(id=${profile.photos.get(0)})}"
+                             class="img-fluid" th:alt="${profile.nickname}"/>
+                    </div>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+<div data-th-insert="~{fragments/footer :: foot}"></div>
+</div>
+</body>
+</html>

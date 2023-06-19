@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="_csrf" content="${_csrf.token}"/>
+    <meta name="_csrf_header" content="${_csrf.headerName}"/>
+    <title>Profile Core</title>
+</head>
+<body>
+<div data-th-fragment="data (profile, readonly)">
+    <div data-th-object="${profile}">
+        <br>
+        <label for="nickname" class="form-label">Nickname</label>
+        <input type="text" id="nickname" data-th-readonly="${readonly}" data-th-field="*{nickname}"
+               class="form-control">
+        <br>
+        <label for="birthdate" class="form-label">Birthday</label>
+        <input type="date" id="birthdate" data-th-readonly="${readonly}" data-th-field="*{birthdate}"
+               class="form-control">
+        <br>
+        <label for="hornlength" class="form-label">Hornlength</label>
+        <input type="number" min="0" id="hornlength" data-th-readonly="${readonly}" data-th-field="*{hornlength}"
+               class="form-control">
+        <br>
+        <label data-th-unless="${readonly}" for="genderInput" class="form-label">Gender</label>
+        <select data-th-unless="${readonly}" id="genderInput" data-th-readonly="${readonly}" data-th-field="*{gender}"
+                class="form-select">
+            <option th:value="1" th:text="FEE"></option>
+            <option th:value="2" th:text="MA"></option>
+        </select>
+        <p data-th-if="${readonly}" data-th-text="'Gender: ' + (*{gender} eq 1) ? 'FEE' : 'MA'"></p>
+        <br>
+        <label data-th-unless="${readonly}" for="attractedToGenderInput" class="form-label">Attracted to</label>
+        <select data-th-unless="${readonly}" id="attractedToGenderInput" data-th-readonly="${readonly}"
+                data-th-field="*{attractedToGender}" class="form-select">
+            <option th:value="null" th:text="Both"></option>
+            <option th:value="1" th:text="FEE"></option>
+            <option th:value="2" th:text="MA"></option>
+        </select>
+        <span data-th-if="${readonly}">Attracted to: </span>
+        <div data-th-if="${readonly}" data-th-switch="*{attractedToGender}">
+            <p data-th-case="null">Both</p>
+            <p data-th-case="1">FEE</p>
+            <p data-th-case="2">MA</p>
+        </div>
+        <br>
+        <label for="description" class="form-label">Hobbies, Tastes and Passions</label>
+        <input type="text" id="description" data-th-readonly="${readonly}" data-th-field="*{description}"
+               class="form-control">
+    </div>
+</div>
+
+<div data-th-fragment="photos (photos, readonly)">
+    <div id="profilePhotoCarousel" class="carousel slide w-50 p-3" data-bs-interval="false" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div data-th-each="photo,is : ${photos}" data-th-id="${photo}" class="carousel-item"
+                 data-th-classappend="${is.last} ? active">
+                <img class="d-block w-100" th:src="@{/photos/{id}(id=${photo})}">
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#profilePhotoCarousel"
+                data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#profilePhotoCarousel"
+                data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+    <form data-th-action="@{/login}" method="post">
+        <button data-th-unless="${readonly}" id="profile-photo" type="button" class="btn btn-primary">Profile Photo</button>
+
+    <button data-th-unless="${readonly}" id="delete-photo" type="button" class="btn btn-primary">Delete</button>
+    <script>
+
+        const token = $("meta[name='_csrf']").attr('content');
+        const header = $("meta[name='_csrf_header']").attr('content');
+
+        console.log(token);
+        console.log(header);
+
+        const profileButton = document.getElementById("profile-photo");
+        const deleteButton = document.getElementById("delete-photo");
+
+        function getDisplayedPhotoId() {
+            return document.getElementById("profilePhotoCarousel").querySelector(".carousel-item.active").id;
+        }
+
+        profileButton.addEventListener("click", _ => {
+            const photoId = getDisplayedPhotoId();
+            fetch(`/photos/profile-photo/${photoId}`, {
+                headers: {header: token},
+                method: 'PUT'
+            });
+            location.replace("/profiles");
+        })
+
+        deleteButton.addEventListener("click", _ => {
+            const photoId = getDisplayedPhotoId();
+            fetch(`/photos/delete/${photoId}`, {
+                headers: {header, token},
+                method: 'DELETE'
+            });
+            location.replace("/profiles");
+        })
+
+    </script>
+</div>
+</body>
+</html>

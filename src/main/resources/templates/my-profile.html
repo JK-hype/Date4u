@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <meta name="_csrf" data-th-content="${_csrf.token}"/>
+    <meta name="_csrf_header" data-th-content="${_csrf.headerName}"/>
+    <title>My Profile</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.1.0/dist/quartz/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <div data-th-insert="~{fragments/header :: head}"></div>
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <h1 data-th-text="'Hello, ' + ${profile.nickname}"></h1>
+            <div data-th-insert="~{fragments/profile :: photos (${profile.photos}, false)}"></div>
+            <form data-th-action="@{profiles/save}" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <input type="file" name="image" accept="image/*" class="form-control-file">
+                </div>
+                <div data-th-insert="~{fragments/profile :: data (${profile}, false)}"></div>
+                <br>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+        </div>
+    </div>
+    <div data-th-insert="~{fragments/footer.html :: foot}"></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

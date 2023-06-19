@@ -1,0 +1,165 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+skinparam classAttributeIconSize 0
+
+package "infrastructure" {
+package "configuration"{
+class UserDetailsServiceConfig{
++ userDetailsService(): UserDetailsService
+}
+class SecurityConfig{
++ filterChain(http: HttpSecurity): SecurityFilterChain
+}
+class BeanConfiguration{
++ photoService(photoRepository: PhotoRepository): PhotoService
++ profileService(profileRepository: ProfileRepository): ProfileService
++ likesService(likesRepository: LikesRepository): LikesService
+}
+}
+}
+
+package "core" {
+package "entities"{
+class Profile{
+- id: Long
+- birthdate: LocalDate
+- hornlength: short
+- gender: byte
+- attractedToGender: byte
+- description: String
+- lastSeen: LocalDateTime
+}
+class Photo{
+- id: Long
+- name: String
+- isProfilePhoto: boolean
+- created: LocalDateTime
+}
+class Unicorn{
+- id: Long
+- email: String
+- password: String
+}
+class Likes{
+- liker: Profile
+- likee: Profile
+}
+}
+package "persistence" {
+interface ProfileRepository{
++ updateLastSeenById(id: long, now: LocalDateTime)
+}
+interface PhotoRepository {
++ findLikerProfilesById(id: long)
+}
+interface UnicornRepository{
+}
+interface LikesRepository{
++ toggleLike(likerId: long, likeeId: long)
+}
+}
+package "services"{
+class ProfileService{
+- profileRepository: ProfileRepository
++ findProfileByNickname(String: nickname): Profile
++ getNicknameIdMap(): Map<String, Long>
++ search(searchFilter: SearchFilter, String nickname)
++ saveProfile(profile: Profile)
++ updateLastSeenByNickname(nickname: String)
+}
+class PhotoService{
+- photoRepository: PhotoRepository
++ findPhotosByNickname(nickname: String): List<Photo>
++ upload(photo: byte[])
++ save(photos: List<Photo>)
+}
+class LikesService{
+- likesRepository: LikesRepository
++ findLikerByNickname(nickname: String): List<String>
+}
+}
+package "util"{
+class NicknameToIdMapper{
+- nicknameIdMap: Map<String, Long>
++ mapNicknameToId(String: nickname)
+- NicknameToIdMapper()
+}
+}
+package filter {
+class SearchFilter {
+- minAge: int
+- maxAge: int
+- minHornlength: short
+- maxHornlength: short
+}
+}
+}
+
+
+
+package "interface" {
+package "controller" {
+class Controller{
++ register(unicornFormData: UnicornFormData, profileFormData: ProfileFormData, photoNames: List<String>): String
++ register(): String
++ home(principal: Principal): String
++ profileByNickname(nickname: String): String
++ searchProfile(searchFormData: SearchFormData): String
++ searchProfile(): String
++ saveProfile(profileFormData: ProfileFormData): String
++ toggleLike(principal: Principal, nickname: String)
++ logout(): String
+}
+}
+package "mapper" {
+interface ProfileToProfileFormDataMapper{
++ convert(profile: Profile): ProfileFormData
+}
+interface ProfileFormDataToProfileMapper{
++ convert(profileFormData: ProfileFormData): Profile
+}
+interface UnicornFormDataToUnicornMapper{
++ convert(unicornFormData: UnicornFormData): Unicorn
+}
+interface SearchFormDataToSearchFilterMapper{
++ convert(searchFormData: SearchFormData): SearchFilter
+}
+}
+package "formData"{
+class ProfileFormData {
+- id: Long
+- birthdate: LocalDate
+- hornlength: short
+- gender: byte
+- attractedToGender: byte
+- description: String
+- lastSeen: LocalDateTime
+}
+class SearchFormData{
+- minAge: int
+- maxAge: int
+- minHornlength: short
+- maxHornlength: short
+}
+class UnicornFormData{
+- id: Long
+- email: String
+- password: String
+}
+}
+}
+
+package "org.springframework.data.jpa.repository" {
+interface JpaRepository{}
+}
+
+Photo "1..*" - "1" Profile
+Unicorn "1" - "1" Profile
+Likes "1..*" - "1" Profile
+ProfileRepository --|> JpaRepository
+UnicornRepository --|> JpaRepository
+PhotoRepository --|> JpaRepository
+LikesRepository --|> JpaRepository
+
+@enduml

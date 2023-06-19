@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.1.0/dist/quartz/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <div data-th-insert="~{fragments/header.html :: head}"></div>
+    <h1>Welcome to Date4u</h1>
+    <div class="w-25" data-th-each="profile : ${profiles}">
+        <img class="d-block w-25" th:src="@{/photos/{id}(id=${profile.getPhotos[0]})}">
+        <p data-th-text="${profile.nickname}">NICKNAME</p>
+    </div>
+    <div data-th-insert="~{fragments/footer.html :: foot}"></div>
+</div>
+</body>
+</html>

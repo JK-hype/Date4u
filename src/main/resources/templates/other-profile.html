@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <meta name="_csrf" data-th-content="${_csrf.token}"/>
+    <meta name="_csrf_header" data-th-content="${_csrf.headerName}"/>
+    <meta charset="UTF-8">
+    <title data-th-text="${profile.nickname}"></title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.1.0/dist/quartz/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <div data-th-insert="~{fragments/header :: head}"></div>
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <h1 data-th-text="${profile.nickname}"></h1>
+            <div data-th-insert="~{fragments/profile :: photos (${profile.photos}, true)}"></div>
+            <div data-th-insert="~{fragments/profile :: data (${profile}, true)}"></div>
+        </div>
+        <br>
+        <a data-th-href="@{/likes/toggle/{nickname}(nickname=${profile.nickname})}"
+           data-th-text="${liked} ? Unlike : Like" class="btn btn-primary" type="button"></a>
+        <br>
+        <a data-th-href="@{/photos/profile-photo/{id}(id=${photo})}" class="btn btn-primary" type="button">Back</a>
+    </div>
+    <div data-th-insert="~{fragments/footer.html :: foot}"></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
+</body>
+</html>
